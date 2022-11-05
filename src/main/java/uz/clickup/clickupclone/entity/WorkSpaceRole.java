@@ -5,11 +5,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import uz.clickup.clickupclone.entity.WorkSpace;
+import uz.clickup.clickupclone.entity.enums.WorkspaceRoleName;
 import uz.clickup.clickupclone.entity.template.AbsUUIDEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -19,5 +18,12 @@ import javax.persistence.ManyToOne;
 public class WorkSpaceRole extends AbsUUIDEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private WorkSpace workSpace;
+    @Column(nullable = false)
+    private String name;
+    @Enumerated(EnumType.STRING)
+    private WorkspaceRoleName extendsRole;
+
+
+
 
 }
