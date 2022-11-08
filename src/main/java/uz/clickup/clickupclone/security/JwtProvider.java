@@ -7,6 +7,5 @@ public class JwtProvider {
     public String generateToken(String username){
         String token = Jwts
                 .builder()
-                .
     }
 }
