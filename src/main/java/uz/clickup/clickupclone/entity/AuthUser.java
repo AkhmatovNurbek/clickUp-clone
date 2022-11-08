@@ -1,27 +1,24 @@
 package uz.clickup.clickupclone.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
+import lombok.*;
+import org.hibernate.Hibernate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import uz.clickup.clickupclone.entity.enums.SystemRoleName;
-import uz.clickup.clickupclone.entity.template.AbsUUIDEntity;
+import uz.clickup.clickupclone.entity.template.AbLongEntity;
 
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.UUID;
-@EqualsAndHashCode(callSuper = true)
-@Data
+import java.util.Objects;
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class AuthUser extends AbsUUIDEntity implements UserDetails {
+public class AuthUser extends AbLongEntity implements UserDetails {
     private String fullName;
     @Column(unique = true, nullable = false)
     private String email;
@@ -29,8 +26,11 @@ public class AuthUser extends AbsUUIDEntity implements UserDetails {
     private String color;
     private String initialLetter;
     @OneToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Attachment avatar;
+    private String emailCode;
     private boolean enabled;
+
     private boolean accountNonExpired;
     private boolean accountNonLocked;
     private boolean credentialsNonExpired;
@@ -67,5 +67,25 @@ public class AuthUser extends AbsUUIDEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return this.enabled;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        AuthUser authUser = (AuthUser) o;
+        return getId() != null && Objects.equals(getId(), authUser.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
+    public AuthUser(String fullName, String email, String password, SystemRoleName systemRoleName) {
+        this.fullName = fullName;
+        this.email = email;
+        this.password = password;
+        this.systemRoleName = systemRoleName;
     }
 }

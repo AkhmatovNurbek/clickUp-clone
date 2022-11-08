@@ -2,9 +2,10 @@ package uz.clickup.clickupclone.entity;
 
 import lombok.*;
 import org.hibernate.Hibernate;
+import uz.clickup.clickupclone.entity.enums.WorkspacePermissionName;
 import uz.clickup.clickupclone.entity.template.AbLongEntity;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
 import java.util.Objects;
 
 @Getter
@@ -13,17 +14,17 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Attachment extends AbLongEntity {
-    private String name;
-    private String originalName;
-    private Long size;
-    private String contentType;
+public class WorkspacePermission extends AbLongEntity {
+    @ManyToOne(fetch = FetchType.LAZY , optional = false)
+    private WorkSpaceRole workSpaceRole;
+    @Enumerated(EnumType.STRING)
+    private WorkspacePermissionName permissionName;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Attachment that = (Attachment) o;
+        WorkspacePermission that = (WorkspacePermission) o;
         return getId() != null && Objects.equals(getId(), that.getId());
     }
 
@@ -31,4 +32,5 @@ public class Attachment extends AbLongEntity {
     public int hashCode() {
         return getClass().hashCode();
     }
+
 }
