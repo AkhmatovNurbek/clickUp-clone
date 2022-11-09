@@ -11,6 +11,7 @@ import uz.clickup.clickupclone.entity.AuthUser;
 import uz.clickup.clickupclone.payload.ApiResponse;
 import uz.clickup.clickupclone.payload.LoginDto;
 import uz.clickup.clickupclone.payload.RegisterDto;
+import uz.clickup.clickupclone.security.JwtProvider;
 import uz.clickup.clickupclone.service.AuthService;
 
 import javax.validation.Valid;
@@ -22,20 +23,30 @@ public class AuthController {
     AuthService authService;
     @Autowired
     AuthenticationManager authenticationManager;
+    @Autowired
+    JwtProvider jwtProvider;
 
     @PostMapping(value = "/register")
-    public HttpEntity<?> registerUser(@Valid @RequestBody RegisterDto registerDto){
+    public HttpEntity<?> registerUser(@Valid @RequestBody RegisterDto registerDto) {
         ApiResponse apiResponse = authService.registerUser(registerDto);
-        return ResponseEntity.status(apiResponse.isSuccess()?200:409).body(apiResponse);
+        return ResponseEntity.status(apiResponse.isSuccess() ? 200 : 409).body(apiResponse);
     }
 
     @PostMapping
-    public HttpEntity<?> login(@Valid @RequestBody LoginDto loginDto){
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                loginDto.getEmail(),
-                loginDto.getPassword()
-        ));
-    AuthUser user = (AuthUser)authenticate.getPrincipal();
+    public HttpEntity<?> login(@Valid @RequestBody LoginDto loginDto) {
+        try {
+
+
+            Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    loginDto.getEmail(),
+                    loginDto.getPassword()
+            ));
+            AuthUser user = (AuthUser) authenticate.getPrincipal();
+            String token = jwtProvider.generateToken(user.getEmail());
+            return ResponseEntity.ok(token);
+        }catch (Exception e){
+            return ResponseEntity.ok(new ApiResponse("Parol yoki login xato" ,false)  );
+        }
 
     }
 }
